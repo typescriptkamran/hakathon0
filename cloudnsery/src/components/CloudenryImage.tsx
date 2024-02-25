@@ -2,8 +2,9 @@
 import { CldImage } from "next-cloudinary";
 import React from "react";
 import Heart from "./Heart";
+import cloudinary from 'cloudinary'
 
-function CloudenryImage(props: any & {public_id: string}) {
+function CloudenryImage(props: any & {publicId: string}) {
   return (
     <div className=" relative ">
       
@@ -12,6 +13,7 @@ function CloudenryImage(props: any & {public_id: string}) {
         
         <Heart
         onClick={() => {
+          cloudinary.v2.uploader.add_tag('faverite', [props.publicId])
 
         }} 
         className=" absolute top-2 right-2 " />
