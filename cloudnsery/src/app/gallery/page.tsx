@@ -1,44 +1,47 @@
-"use client";
+
 import Image from "next/image";
-import { CldUploadButton } from "next-cloudinary";
+import UploadButton from "@/components/UploadButton";
+import cloudinary from "cloudinary";
 import { CldImage } from "next-cloudinary";
-import { useState } from "react";
+import CloudenryImage from "@/components/CloudenryImage";
 
-type UploadResult = {
-  info: {
-    public_id: string;
-  };
-  event: "success";
-};
+type SearchResults = {
+    public_id: string
+}
 
-export default function Home() {
-  let [imageId, setImageId] = useState("orpxf4zhxynhaxqmz10y");
-
+export default async function Home() {
+   const result =  (await cloudinary.v2.search
+  .expression('resource_type:image')
+  .sort_by('created_at', 'desc')
+  .max_results(30)
+  .execute()) as { resources: SearchResults[] } 
+  
   return (
-    <div>
-      <section className="flex w-full items-baseline gap-5 py-5 px-5 justify-between ">
+    <div className="flex flex-col w-full h-screen py-6 px-5">
+      <section className="flex justify-between w-full items-baseline gap-5 py-5 px-5 ">
         <h1>Gallery Images</h1>
         <div>
-          <CldUploadButton
-            onUpload={(result: any) => {
-              console.log(result.info.public_id);
-              imageId = result.info.public_id;
-            }}
-            uploadPreset="cvvgsulo"
-            className="bg-slate-300 py-2 px-3 rounded-full"
-          />
+            <UploadButton />
+          
+          </div>
+          </section>
+          <section className="grid grid-rows-4 grid-flow-col gap-4 ">
 
-          {imageId && (
-            <CldImage
-              width="400"
-              height="300"
-              src={imageId}
-              sizes="100vw"
-              alt="Description of my image"
-            />
+          {result.resources.map((result) =>
+          <CloudenryImage
+          key = {result.public_id}
+          src = {result.public_id}
+          width = "400"
+          height = "300"
+          sizes="100vw"
+          alt = "something"
+        
+
+           />
           )}
-        </div>
-      </section>
+          </section>
+        
+      
     </div>
   );
 }
